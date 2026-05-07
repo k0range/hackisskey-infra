@@ -1,0 +1,56 @@
+misskey.dino.icu, http://localhost {
+  root * /var/www/html
+
+  handle {
+    handle /down/* {
+      file_server
+    }
+
+    @maintenance {
+      file /down/maintenance.json
+    }
+    handle @maintenance {
+      try_files {path} /maintenance.html
+      file_server {
+        status 503
+      }
+    }
+
+    reverse_proxy misskey:3000 {
+      lb_try_duration 0s
+      transport http {
+        dial_timeout 1s
+        response_header_timeout 1s
+      }
+
+      health_uri /healthz
+      health_interval 3s
+      health_timeout 1s
+      health_fails 1
+      health_passes 1
+    }
+  }
+
+  handle_errors {
+    handle /down/* {
+      file_server
+    }
+
+    @updating {
+      file /down/update.json
+    }
+    handle @updating {
+      try_files {path} /updating.html
+      file_server {
+        status 503
+      }
+    }
+
+    handle {
+      try_files {path} /down.html
+      file_server {
+        status 502
+      }
+    }
+  }
+}

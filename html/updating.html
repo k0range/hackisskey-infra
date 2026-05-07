@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackisskey is updating...</title>
+    <link rel="stylesheet" href="https://css.hackclub.com/theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Google Sans Flex', sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        text-align: center;">
+      <h1 class="title" style="color: var(--primary); margin-bottom: 6px;">Hackisskey is updating...</h1>
+      <p class="" style="color: var(--slate);">We are currently updating Hackisskey. Please wait a moment and try again later.</p>
+      <p class="" style="color: var(--slate); margin-top: 0px; font-size: var(--font-1); opacity: 0.5;">(The update started <span id="ago">＿＿＿＿</span>)</p>
+
+      <div id="versionInfo" style="display: none; margin-top: 20px; align-items: center; width: 100%;">
+        <div style="flex: 1; display: flex; justify-content: end; position: relative;">
+          <div class="outline-badge" style="width: fit-content; margin-left: 0; font-size: calc(var(--font-2)*1.115); background-color: var(--smoke); color: var(--slate); border: none;" id="oldVersion"></div>
+        </div>
+
+        <div style="margin: 0 24px; display: flex; gap: 1px;">
+          <svg style="width: auto; height: 18px; margin-top: -4px; color: var(--stale);" viewBox="0 0 139 296" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 20.0005L111.988 130.042C120.678 140.438 120.678 155.564 111.988 165.959L20 276" stroke="currentColor" style="opacity: 0.3; transition-duration: 200ms; transition-property: all;" stroke-width="40" stroke-linecap="round"/>
+          </svg>
+          <svg style="width: auto; height: 18px; margin-top: -4px; color: var(--stale);" viewBox="0 0 139 296" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 20.0005L111.988 130.042C120.678 140.438 120.678 155.564 111.988 165.959L20 276" stroke="currentColor" style="opacity: 0.3; transition-duration: 200ms; transition-property: all;" stroke-width="40" stroke-linecap="round"/>
+          </svg>
+          <svg style="width: auto; height: 18px; margin-top: -4px; color: var(--stale);" viewBox="0 0 139 296" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 20.0005L111.988 130.042C120.678 140.438 120.678 155.564 111.988 165.959L20 276" stroke="currentColor" style="opacity: 0.3; transition-duration: 200ms; transition-property: all;" stroke-width="40" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div style="flex: 1">
+          <div class="pill" style="font-size: var(--font-4); width: fit-content; transform: rotateZ(4deg); box-shadow: var(--shadow-card); position: relative;">
+            <div style="position: absolute; right: -16px; top: -14px;">✨️</div>
+            <span id="newVersion"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; display: flex; justify-content: center; margin-bottom: 42px; ">
+      <div class="card sunken" style="padding: 24px 48px;">
+        <div style="font-size: var(--font-2);">Hackisskey is an unofficial Misskey server for <a href="https://hackclub.com">Hack Club</a> members.</div>
+        <div style="display: flex; gap: 16px; justify-content: center; margin-top: 12px;">
+          <a href="https://hackclub.enterprise.slack.com/archives/C0B2B8LLLAY" class="" style="font-size: var(--font-1);">#hackisskey</a>
+          <a href="https://github.com/k0range/hackisskey-infra" class="" style="font-size: var(--font-1);">Ops repository</a>
+          <a href="https://korange.work/" class="" style="font-size: var(--font-1);">Server admin</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      setInterval(() => {
+        fetch('/healthz')
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            }
+          })
+          .catch(() => {
+            // do nothing
+          });
+      }, 1000);
+
+      let arrowColorIdx = 0;
+      setInterval(() => {
+        const arrows = document.querySelectorAll('svg path');
+        if (arrowColorIdx <= 2) {
+          arrows[arrowColorIdx].style.stroke = 'var(--primary)';
+          arrows[arrowColorIdx].style.opacity = '1';
+        }
+        arrowColorIdx++;
+
+        if (arrowColorIdx > 3) {
+          arrowColorIdx = 0;
+          arrows.forEach(arrow => {
+            arrow.style.stroke = 'var(--slate)';
+            arrow.style.opacity = '0.3';
+          });
+        }
+      }, 500);
+
+      const noCacheRandom = Math.random().toString(36).substring(2);
+      fetch('/down/update.json?r=' + noCacheRandom)
+        .then(response => response.json())
+        .then(data => {
+          data.updates.find(update => {
+            if (update.service === 'misskey') {
+              document.getElementById('versionInfo').style.display = 'flex';
+              document.getElementById('oldVersion').textContent = update.from;
+              document.getElementById('newVersion').textContent = update.to;
+            }
+          });
+
+          const startedAt = new Date(data["started_at"]);
+          const agoElem = document.getElementById('ago');
+
+          function updateAgo() {
+            const now = new Date();
+
+            const diffInSec = (now.getTime() - startedAt.getTime()) / 1000;
+
+            agoElem.textContent = `${diffInSec > 60 ? `${Math.floor(diffInSec / 60)} minutes and ` : ""}${Math.floor(diffInSec % 60) !== 0 ? `${Math.floor(diffInSec % 60)} seconds` : ``} ago`;
+          }
+
+          updateAgo();
+          setInterval(updateAgo, 500);
+        })
+        .catch(() => {
+          // do nothing
+        });
+    </script>
+  </body>
+</html>

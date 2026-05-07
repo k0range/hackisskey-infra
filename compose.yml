@@ -1,0 +1,96 @@
+name: hackisskey
+
+services:
+  caddy:
+    image: caddy
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "8080:80"
+      - "4443:443"
+      - "4443:443/udp"
+    volumes:
+      - ./caddy:/etc/caddy
+      - ./html:/var/www/html
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - internal_network
+      - external_network
+  
+  misskey:
+    image: ghcr.io/k0range/hackisskey-misskey:master
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    networks:
+      - internal_network
+      - external_network
+    volumes:
+      - ./misskey/default.yml:/misskey/.config/default.yml:ro
+      - misskey-data:/misskey/files
+      - ./watchtower/hooks:/hooks
+    healthcheck:
+      test: "curl -f http://localhost:3000/healthz || exit 1"
+      interval: 5s
+      retries: 80
+  
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    networks:
+      - internal_network
+      - external_network
+    env_file:
+      - ./docker.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/pg-init.sql:/docker-entrypoint-initdb.d/pg-init.sql:ro
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
+      interval: 5s
+      retries: 20
+  
+  valkey:
+    image: valkey/valkey:9.0.3
+    restart: unless-stopped
+    networks:
+      - internal_network
+    env_file:
+      - ./docker.env
+    volumes:
+      - ./valkey/valkey.conf:/etc/valkey/valkey.conf
+      - valkey-data:/data
+    healthcheck:
+      test: "redis-cli -h localhost -p 6379 ping || exit 1"
+      interval: 5s
+      retries: 20
+  
+  meilisearch:
+    image: getmeili/meilisearch
+    restart: unless-stopped
+    env_file:
+      - ./docker.env
+    networks:
+      - internal_network
+    volumes:
+      - meili-data:/meili_data
+
+networks:
+  internal_network:
+    internal: true
+  external_network:
+
+volumes:
+  misskey-data:
+  db-data:
+  valkey-data:
+  meili-data:
+  caddy-data:
+  caddy-config:
