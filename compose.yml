@@ -80,7 +80,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: '0.25'
           memory: 256M
     networks:
       - internal_network
