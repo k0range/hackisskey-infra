@@ -1,4 +1,4 @@
-misskey.dino.icu, http://localhost {
+hc-mk-test.korange.hackclub.app, http://localhost {
   root * /var/www/html
 
   handle {
