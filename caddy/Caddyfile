@@ -1,4 +1,12 @@
-http://hc-mk-test.korange.hackclub.app, http://localhost {
+{
+  servers {
+    servers {
+      trusted_proxies static 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16
+    }
+  }
+}
+
+http://misskey.dino.icu, http://localhost {
   root * /var/www/html
 
   handle {
@@ -54,3 +62,5 @@ http://hc-mk-test.korange.hackclub.app, http://localhost {
     }
   }
 }
+
+
