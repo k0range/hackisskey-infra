@@ -75,8 +75,13 @@ services:
     env_file:
       - ./docker.env
     environment:
-      MEILI_MAX_INDEXING_MEMORY: 128Mb
+      MEILI_MAX_INDEXING_MEMORY: 256Mb
       MEILI_MAX_INDEXING_THREADS: 1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
     networks:
       - internal_network
     volumes:
