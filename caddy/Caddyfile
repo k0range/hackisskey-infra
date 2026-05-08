@@ -1,7 +1,3 @@
-{
-  auto_https off
-}
-
 hc-mk-test.korange.hackclub.app, http://localhost {
   root * /var/www/html
 
