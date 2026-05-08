@@ -63,8 +63,8 @@ done
 DIFF_JSON+="]"
 
 # debug
-NEEDS_UPDATE=true
-DIFF_JSON="[{\"service\":\"misskey\",\"from\":\"v1\",\"to\":\"v2\"}]"
+#NEEDS_UPDATE=true
+#DIFF_JSON="[{\"service\":\"misskey\",\"from\":\"v1\",\"to\":\"v2\"}]"
 # end debug
 
 if [ "$NEEDS_UPDATE" = false ]; then
@@ -123,6 +123,8 @@ if [ $ELAPSED -ge $TIMEOUT ]; then
   trap - EXIT
   exit 1
 fi
+
+sleep 120
 
 # update complete
 trap - EXIT

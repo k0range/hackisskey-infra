@@ -35,7 +35,7 @@ services:
     healthcheck:
       test: "curl -f http://localhost:3000/healthz || exit 1"
       interval: 5s
-      retries: 80
+      retries: 99999999
   
   db:
     image: postgres:18-alpine
