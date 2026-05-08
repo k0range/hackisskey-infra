@@ -69,15 +69,15 @@ services:
       interval: 5s
       retries: 20
   
-  meilisearch:
-    image: getmeili/meilisearch
-    restart: unless-stopped
-    env_file:
-      - ./docker.env
-    networks:
-      - internal_network
-    volumes:
-      - meili-data:/meili_data
+  #meilisearch:
+  #  image: getmeili/meilisearch
+  #  restart: unless-stopped
+  #  env_file:
+  #    - ./docker.env
+  #  networks:
+  #    - internal_network
+  #  volumes:
+  #    - meili-data:/meili_data
 
 networks:
   internal_network:
