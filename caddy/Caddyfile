@@ -1,5 +1,5 @@
 {
-  auto_https disable_certificates
+  auto_https off
 }
 
 hc-mk-test.korange.hackclub.app, http://localhost {
