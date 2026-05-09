@@ -49,7 +49,7 @@ services:
       - "5433:5432"
     volumes:
       - ./db/pg-init.sql:/docker-entrypoint-initdb.d/pg-init.sql:ro
-      - db-data22:/var/lib/postgresql
+      - db-data:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
       interval: 5s
@@ -79,7 +79,7 @@ networks:
 
 volumes:
   misskey-data:
-  db-data22:
+  db-data:
   valkey-data:
   meili-data:
   caddy-data:
