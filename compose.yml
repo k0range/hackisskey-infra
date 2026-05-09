@@ -38,7 +38,7 @@ services:
       retries: 99999999
   
   db:
-    image: postgres:18-alpine
+    image: groonga/pgroonga:latest-alpine-18-slim
     restart: unless-stopped
     networks:
       - internal_network
@@ -48,11 +48,14 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - db-data:/var/lib/postgresql
+      - ./db/pg-init.sql:/docker-entrypoint-initdb.d/pg-init.sql:ro
+      - db-data22:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
       interval: 5s
       retries: 20
+    # Create index with this SQL after the Misskey migration finished
+    # > CREATE INDEX idx_note_text_with_pgroonga ON note USING pgroonga (text);
   
   valkey:
     image: valkey/valkey:9.0.3
@@ -68,23 +71,6 @@ services:
       test: "redis-cli -h localhost -p 6379 ping || exit 1"
       interval: 5s
       retries: 20
-  
-  meilisearch:
-    image: getmeili/meilisearch
-    restart: unless-stopped
-    env_file:
-      - ./docker.env
-    environment:
-      MEILI_EXPERIMENTAL_REDUCE_INDEXING_MEMORY_USAGE: true
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 256M
-    networks:
-      - internal_network
-    volumes:
-      - meili-data:/meili_data
 
 networks:
   internal_network:
@@ -93,7 +79,7 @@ networks:
 
 volumes:
   misskey-data:
-  db-data:
+  db-data22:
   valkey-data:
   meili-data:
   caddy-data:

@@ -2,4 +2,3 @@ secrets.ini
 
 misskey/default.yml
 docker.env
-db/pg-init.sql
