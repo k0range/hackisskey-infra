@@ -4,7 +4,7 @@
   }
 }
 
-http://misskey.dino.icu, http://localhost {
+:8080 {
   root * /var/www/html
 
   handle {
