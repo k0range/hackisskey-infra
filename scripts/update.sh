@@ -1,3 +1,7 @@
+# こんな感じのcron
+# */3 * * * * flock -n /tmp/hackisskey-update.lock -c 'cd /home/hackisskey/hackisskey-infra && ./scripts/update.sh'
+# 実行権限に注意
+
 # by claude
 
 #!/bin/bash
@@ -6,6 +10,9 @@ set -euo pipefail
 COMPOSE_FILE="./compose.yml"
 COMPOSE_PROJECT="hackisskey"
 STATUS_FILE="html/down/update.json"
+
+# updateファイルが残ってたら消す（多重起動しないようにはcron側で担保）
+rm -f "$STATUS_FILE"
 
 # イメージのバージョンラベルを取得
 get_version() {
